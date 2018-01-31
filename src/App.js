@@ -3,8 +3,11 @@ import logo from './mainStreetAuto.svg';
 import axios from 'axios';
 import './App.css';
 
+
 // Toast notification dependencies
 import { ToastContainer, toast } from 'react-toastify';
+
+const baseUrl = "https://joes-autos.herokuapp.com/api";
 
 class App extends Component {
   constructor( props ) {
@@ -29,37 +32,78 @@ class App extends Component {
   }
 
   getVehicles() {
-    // axios (GET)
-    // setState with response -> vehiclesToDisplay
+    axios({
+      method: "GET",
+      url: baseUrl + "/vehicles"
+    }).then(response => {
+    this.setState({ vehiclesToDisplay: response.data });
+    toast.success("Got Vehicles");
+    }).catch(error => {
+      toast.error("This was the error", error);
+    });
   }
 
   getPotentialBuyers() {
-    // axios (GET)
-    // setState with response -> buyersToDisplay
+    axios({
+      method: "GET",
+      url: `${baseUrl}/buyers`
+    }).then(response => {
+      this.setState({ buyersToDisplay: response.data });
+      toast.success("We have buyers!");
+    }).catch(error => {
+      toast.error("No one interested...");
+    });
   }
 
   sellCar( id ) {
-    // axios (DELETE)
-    // setState with response -> vehiclesToDisplay
+    axios({
+      method: "DELETE",
+      url: `${baseUrl}/vehicles/${id}`
+    }).then(response => { 
+      this.setState({ vehiclesToDisplay: response.data.vehicles });
+      toast.success("Deleted Vehicle");
+    }).catch(error => {
+      toast.error("Could not delete vehicle");
+    });
   }
 
   filterByMake() {
     let make = this.refs.selectedMake.value;
-
-    // axios (GET)
-    // setState with response -> vehiclesToDisplay
+    axios({
+      method: "GET",
+      url: `${baseUrl}/vehicles?make=${make}`
+    }).then(response => {
+      this.setState({ vehiclesToDisplay: response.data });
+      toast.success("Sucessfully got make");
+    }).catch(error => {
+      toast.error("Did not get make");
+    });
   }
 
   filterByColor() {
     let color = this.refs.selectedColor.value;
-
-    // axios (GET)
-    // setState with response -> vehiclesToDisplay
+    axios({
+      method: "GET",
+      url: `${baseUrl}/vehicles?=color${color}`
+    }).then(response => {
+      this.setState({ vehiclesToDisplay: response.data });
+      toast.success("WOOOOOOOO!!!!!!");
+    }).catch(error => {
+      toast.error("No bueno");
+    });
   }
 
   updatePrice( priceChange, id ) {
-    // axios (PUT)
-    // setState with response -> vehiclesToDisplay
+    axios({
+      method: "PUT",
+      url: `${baseUrl}/vehicles/${id}/${priceChange}`
+      //url: baseUrl + "/vehicles/" + id + "/" + priceChange
+    }).then(response => {
+      this.setState({ vehiclesToDisplay: response.data.vehicles });
+      toast.success("Sucessfully updated vehicle price");
+    }).catch(error => {
+      toast.error("Error with Request");
+    });
   }
 
   addCar() {
@@ -70,9 +114,18 @@ class App extends Component {
       year: this.refs.year.value,
       price: this.refs.price.value
     };
-
-    // axios (POST)
-    // setState with response -> vehiclesToDisplay
+      
+    axios({
+      method: "POST",
+      url: baseUrl + "/vehicles",
+      data: newCar
+    }).then(response => {
+      console.log(1111, response);
+      this.setState({ vehiclesToDisplay: response.data.vehicles })
+      toast.success("Sucessfully added car");
+    }).catch(error => {
+      toast.error("Unsucessfully added vehicle");
+    });
   }
 
   addBuyer() {
@@ -81,28 +134,54 @@ class App extends Component {
       phone: this.refs.phone.value,
       address: this.refs.address.value
     };
-
-    //axios (POST)
-    // setState with response -> buyersToDisplay
+    axios({
+      method: "POST",
+      url: `${baseUrl}/buyers`,
+      data: newBuyer
+    }).then(response => {
+      this.setState({ buyersToDisplay: response.data.buyers })
+      toast.success("New buyer!");
+    }).catch(error => {
+      toast.error("FAIL");
+    });
   }
 
   deleteBuyer( id ) {
-    // axios (DELETE)
-    //setState with response -> buyersToDisplay
+    axios({
+      method: "DELETE",
+      url: `${baseUrl}/buyers/${id}`
+    }).then(response => {
+      this.setState({ buyersToDisplay: response.data.buyers })
+      toast.success("It works");
+    }).catch(error => {
+      toast.error("It doesn't work");
+    });
   }
 
   nameSearch() {
     let searchLetters = this.refs.searchLetters.value;
-
-    // axios (GET)
-    // setState with response -> buyersToDisplay
+    axios({
+      method: "GET",
+      url: `${baseUrl}/buyers?name=${searchLetters}`
+    }).then(response => {
+      this.setState({ buyersToDisplay: response.data})
+      toast.success("WOOT");
+    }).catch(error => {
+      toast.error(":P");
+    });
   }
 
   byYear() {
     let year = this.refs.searchYear.value;
-
-    // axios (GET)
-    // setState with response -> vehiclesToDisplay
+    axios({
+      method: "GET",
+      url: `${baseUrl}/vehicles?year=${year}`
+    }).then(response => {
+      this.setState({ vehiclesToDisplay: response.data })
+      toast.success("MAY THE FORCE BE WITH YOU!");
+    }).catch(error => {
+      toast.error("Join the darkside");
+    });
   }
 
   // Do not edit the code below
